@@ -24,3 +24,6 @@ def main():
             # save or append to disk (append implementation omitted for brevity)
             texts = []
     # final flush...
+    
+if __name__ == "__main__":
+    main()
