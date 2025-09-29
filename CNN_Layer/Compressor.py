@@ -35,7 +35,7 @@ class HybridCompressor(nn.Module):
         self.conv_stack = ConvDownsampleStack(Dproj, n_blocks=conv_blocks, depthwise=depthwise, save_intermediate=False)
         self.attn_pool = AttentionPooling(Dproj, M=pool_M, n_heads=pool_heads)
         self.selector = TopKSelector(Dproj)
-        self.merger = MergeToTransformerInput(Dproj, Dmodel, interleave=interleave)
+        # self.merger = MergeToTransformerInput(Dproj, Dmodel, interleave=interleave)
         # optional
         # self.recon = ReconstructionHead(Dproj, Dmodel)  
         self.pool_M = pool_M
