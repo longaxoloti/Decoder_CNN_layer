@@ -3,7 +3,7 @@ from prepare import tokenize_and_chunk, save_as_arrow
 from transformers import AutoTokenizer
 import argparse
 
-""" Load DeepMinh PG19 from huggingface datasets: 'https://huggingface.co/datasets/deepmind/pg19?utm_source=chatgpt.com' """
+""" Load DeepMind PG19 from huggingface datasets: 'https://huggingface.co/datasets/deepmind/pg19?utm_source=chatgpt.com' """
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--split", default="train")
