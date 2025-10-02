@@ -6,6 +6,7 @@ from Embedding_CNN import EmbeddingProjection, ConvDownsampleStack
 from AttentionPooling import AttentionPooling
 from Selector import TopKSelector
 from Merge2transformer import MergeToTransformerInput
+from ReconstructionHead import ReconstructionHead
 
 class HybridCompressor(nn.Module):
     """
@@ -35,9 +36,9 @@ class HybridCompressor(nn.Module):
         self.conv_stack = ConvDownsampleStack(Dproj, n_blocks=conv_blocks, depthwise=depthwise, save_intermediate=False)
         self.attn_pool = AttentionPooling(Dproj, M=pool_M, n_heads=pool_heads)
         self.selector = TopKSelector(Dproj)
-        # self.merger = MergeToTransformerInput(Dproj, Dmodel, interleave=interleave)
+        self.merger = MergeToTransformerInput(Dproj, Dmodel, interleave=interleave)
         # optional
-        # self.recon = ReconstructionHead(Dproj, Dmodel)  
+        self.recon = ReconstructionHead(Dproj, Dmodel)  
         self.pool_M = pool_M
         self.topk_param = topk
 
