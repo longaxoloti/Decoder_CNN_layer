@@ -24,6 +24,8 @@ class TopKSelector(nn.Module):
     def forward(self, features: torch.Tensor, k: int):
         # features: (B, L, D)
         B, L, D = features.shape
+        if L == 0:
+            return features.new_empty((B, 0, D)), features.new_empty((B, L)), torch.empty((B, 0), dtype = torch.long, device = features.device)
         x = self.ln(features)  # (B, L, D)
         scores = self.scorer(x).squeeze(-1) + self.scorer_bias  # (B, L)
         # optionally normalize or use sigmoid; here we'll use raw scores for topk
