@@ -5,7 +5,7 @@ from typing import Optional, Tuple, Dict, Any
 from Embedding_CNN import EmbeddingProjection, ConvDownsampleStack
 from AttentionPooling import AttentionPooling
 from Selector import TopKSelector
-from Merge2transformer import MergeToTransformerInput
+from Composer import Composer
 from ReconstructionHead import ReconstructionHead
 
 class HybridCompressor(nn.Module):
@@ -36,7 +36,7 @@ class HybridCompressor(nn.Module):
         self.conv_stack = ConvDownsampleStack(Dproj, n_blocks=conv_blocks, depthwise=depthwise, save_intermediate=False)
         self.attn_pool = AttentionPooling(Dproj, M=pool_M, n_heads=pool_heads)
         self.selector = TopKSelector(Dproj)
-        self.merger = MergeToTransformerInput(Dproj, Dmodel, interleave=interleave)
+        self.merger = Composer(Dproj, Dmodel, interleave=interleave)
         # optional
         self.recon = ReconstructionHead(Dproj, Dmodel)  
         self.pool_M = pool_M
@@ -51,7 +51,6 @@ class HybridCompressor(nn.Module):
         """
         B, L, D = embeddings.shape
         x = self.embed_proj.proj(embeddings)  # (B, L, Dproj)
-        # Optionally preserve recent tokens (e.g. last W uncompressed)
         if keep_recent is None:
             keep_recent = 0
         keep_recent = max(0, min(keep_recent, L))

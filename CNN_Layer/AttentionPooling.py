@@ -14,7 +14,6 @@ class AttentionPooling(nn.Module):
         self.D = D
         self.M = M
         self.n_heads = n_heads
-        # pool queries are parameters
         self.pool_queries = nn.Parameter(torch.randn(M, D) * (D ** -0.5))
         # use linear maps for Q/K/V
         self.q_proj = nn.Linear(D, D)
@@ -32,7 +31,6 @@ class AttentionPooling(nn.Module):
         K = self.k_proj(conv_feats)  # (B, L', D)
         V = self.v_proj(conv_feats)  # (B, L', D)
 
-        # compute multihead attention by reshaping
         def reshape_for_heads(x):
             # x: (B, S, D) -> (B, n_heads, S, D_head)
             d_head = D // self.n_heads
@@ -42,7 +40,6 @@ class AttentionPooling(nn.Module):
         Qh = reshape_for_heads(Q)  # (B, n_heads, M, d_head)
         Kh = reshape_for_heads(K)  # (B, n_heads, L', d_head)
         Vh = reshape_for_heads(V)  # (B, n_heads, L', d_head)
-        # scaled dot-product
         scale = (D // self.n_heads) ** -0.5
         attn_logits = torch.einsum('bhmd,bhnd->bhmn', Qh, Kh) * scale  # (B, n_heads, M, L')
         if mask is not None:

@@ -18,7 +18,6 @@ class TopKSelector(nn.Module):
             nn.GELU(),
             nn.Linear(hidden, 1)
         )
-        # bias can be used to shift threshold
         self.scorer_bias = scorer_bias
 
     def forward(self, features: torch.Tensor, k: int):
@@ -28,13 +27,11 @@ class TopKSelector(nn.Module):
             return features.new_empty((B, 0, D)), features.new_empty((B, L)), torch.empty((B, 0), dtype = torch.long, device = features.device)
         x = self.ln(features)  # (B, L, D)
         scores = self.scorer(x).squeeze(-1) + self.scorer_bias  # (B, L)
-        # optionally normalize or use sigmoid; here we'll use raw scores for topk
+        # raw scores for topk
         idx = topk_from_scores(scores, k=k)  # (B, k) or (k, )
-        # gather embeddings
         if idx.dim() == 1:
             selected = features[:, idx, :]  # (B, k, D)
         else:
-            # batched gather:
             # idx: (B, k)
             batch_idx = torch.arange(B, device=features.device).unsqueeze(-1)
             selected = features[batch_idx, idx, :]  # (B, k, D)
